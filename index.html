@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>與土地相遇：大地創作與自然顏料 - 特教課程互動Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Noto Sans TC, Lexend -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        earth: {
+                            50: '#fdfbf7',
+                            100: '#f7f2e8',
+                            200: '#eee3cf',
+                            300: '#e1cbab',
+                            400: '#ceaa7f',
+                            500: '#b88959',
+                            600: '#a37146',
+                            700: '#845738',
+                            800: '#6d4832',
+                            900: '#593c2b',
+                        },
+                        forest: {
+                            50: '#f2f8f4',
+                            100: '#dfefe4',
+                            200: '#c2dfcb',
+                            300: '#9ac8a7',
+                            400: '#6da980',
+                            500: '#4b8d61',
+                            600: '#38704a',
+                            700: '#2f593c',
+                            800: '#284832',
+                            900: '#223c2a',
+                        },
+                        clay: '#d97706',
+                        charcoal: '#374151',
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'Lexend', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fcfaf7;
+            color: #332922;
+        }
+        
+        .pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* 列印模式專用樣式 */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background: white;
+                color: black;
+            }
+            .card-box {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                break-inside: avoid;
+            }
+        }
+
+        /* 繪圖畫布點陣紋理 */
+        .canvas-bg {
+            background-color: #f7f3e9;
+            background-image: radial-gradient(#d6c7b2 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        /* 特教友善大按鈕動畫 */
+        .btn-sen {
+            transition: all 0.2s ease;
+        }
+        .btn-sen:active {
+            transform: scale(0.95);
+        }
+
+        /* 隱藏捲軸但仍可滑動 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-earth-300 selection:text-earth-900">
+
+    <!-- 頂部導覽列 Header -->
+    <header class="bg-earth-800 text-earth-50 sticky top-0 z-50 shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-forest-500 flex items-center justify-center text-white text-xl sm:text-2xl shadow-inner">
+                        <i class="fa-solid font-leaf"></i> 🌱
+                    </div>
+                    <div>
+                        <span class="text-xs sm:text-sm font-semibold tracking-wider text-earth-300 uppercase block">國小特教班 / 資源班 微型課程</span>
+                        <h1 class="text-lg sm:text-2xl font-bold tracking-tight text-white">與土地相遇：大地創作與自然顏料</h1>
+                    </div>
+                </div>
+
+                <!-- 導覽功能選單 -->
+                <nav class="hidden md:flex space-x-2 text-sm font-medium">
+                    <button onclick="scrollToSection('overview')" class="px-3 py-2 rounded-md hover:bg-earth-700 transition">課程地圖</button>
+                    <button onclick="scrollToSection('weekly-plans')" class="px-3 py-2 rounded-md hover:bg-earth-700 transition">四週詳細教案</button>
+                    <button onclick="scrollToSection('iep-aids')" class="px-3 py-2 rounded-md hover:bg-earth-700 transition">IEP口訣與輔具</button>
+                    <button onclick="scrollToSection('teacher-tools')" class="px-3 py-2 rounded-md hover:bg-earth-700 transition">課堂互動工具</button>
+                </nav>
+
+                <div class="flex items-center space-x-2">
+                    <button onclick="window.print()" class="bg-forest-600 hover:bg-forest-700 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 shadow transition btn-sen">
+                        <i class="fa-solid fa-print"></i>
+                        <span class="hidden sm:inline">列印 / 匯出教案</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要內容區 Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+        <!-- 1. 課程總覽與學習地圖 Section Overview -->
+        <section id="overview" class="scroll-mt-24">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-earth-200 card-box">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 border-b border-earth-100 pb-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-forest-100 text-forest-800 rounded-full text-xs font-bold mb-2">
+                            <i class="fa-solid fa-graduation-cap"></i> 特殊教育適性課程架構
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-earth-900">課程大綱與核心素養地圖</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-xs sm:text-sm font-semibold">
+                        <span class="px-3 py-1.5 bg-earth-100 text-earth-800 rounded-lg">⏱️ 連續 4 週 (每週 1 節 / 40 分鐘)</span>
+                        <span class="px-3 py-1.5 bg-forest-100 text-forest-800 rounded-lg">🧒 國小中/輕度特教生 & 資源班</span>
+                    </div>
+                </div>
+
+                <!-- 核心指標 3 大柱石 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 核心素養 -->
+                    <div class="bg-earth-50 rounded-2xl p-5 border border-earth-200">
+                        <div class="flex items-center gap-3 mb-2 text-earth-800 font-bold">
+                            <div class="w-8 h-8 rounded-lg bg-earth-200 flex items-center justify-center text-earth-700">
+                                <i class="fa-solid fa-compass"></i>
+                            </div>
+                            <h3>核心素養</h3>
+                        </div>
+                        <ul class="text-xs sm:text-sm space-y-2 text-earth-700">
+                            <li><strong class="text-earth-900">A2 系統思考與解決問題：</strong> 感官覺察自然變化，嘗試顏料泥土調製。</li>
+                            <li><strong class="text-earth-900">C2 團隊合作與同理心：</strong> 素材採集互助共享，欣賞同儕藝術表達。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 設計理念 -->
+                    <div class="bg-forest-50 rounded-2xl p-5 border border-forest-200">
+                        <div class="flex items-center gap-3 mb-2 text-forest-800 font-bold">
+                            <div class="w-8 h-8 rounded-lg bg-forest-200 flex items-center justify-center text-forest-700">
+                                <i class="fa-solid fa-lightbulb"></i>
+                            </div>
+                            <h3>設計理念</h3>
+                        </div>
+                        <p class="text-xs sm:text-sm text-forest-800 leading-relaxed">
+                            整合自然觀察、五感覺察、自然顏料調製（泥土、木炭、樹葉）與質地實驗（拓印、刮刻、拼貼），引導特學生打開感官、探索環境，並透過精細動作進行自我表達。
+                        </p>
+                    </div>
+
+                    <!-- IEP 特教策略 -->
+                    <div class="bg-amber-50 rounded-2xl p-5 border border-amber-200">
+                        <div class="flex items-center gap-3 mb-2 text-amber-900 font-bold">
+                            <div class="w-8 h-8 rounded-lg bg-amber-200 flex items-center justify-center text-amber-700">
+                                <i class="fa-solid fa-user-check"></i>
+                            </div>
+                            <h3>IEP 適性策略融入</h3>
+                        </div>
+                        <ul class="text-xs sm:text-sm space-y-1.5 text-amber-900">
+                            <li>🌱 <strong>多感官學習：</strong> 泥土粗細觸覺、落葉氣味與視覺刺激。</li>
+                            <li>🗣️ <strong>簡化口訣：</strong> 「一抓、二塗、三壓印」直覺步驟。</li>
+                            <li>🖐️ <strong>輔具與肢體：</strong> 綁紮松針刷、粗把手筆、Hand-over-hand (手把手) 引導。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 4週學習階梯圖解 -->
+                <h3 class="text-lg font-bold text-earth-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-stairs text-forest-600"></i> 四週連續課程發展階梯
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white border-2 border-forest-400 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-black text-forest-700 bg-forest-100 px-2.5 py-1 rounded-full">第 1 週</span>
+                            <span class="text-xl">🍃</span>
+                        </div>
+                        <h4 class="font-bold text-earth-900 mb-1">打開心靈，遇見土地</h4>
+                        <p class="text-xs text-gray-600">感官覺察、靜心觀察與校園自然素材採集。</p>
+                    </div>
+
+                    <div class="bg-white border-2 border-earth-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-black text-earth-700 bg-earth-100 px-2.5 py-1 rounded-full">第 2 週</span>
+                            <span class="text-xl">🎨</span>
+                        </div>
+                        <h4 class="font-bold text-earth-900 mb-1">大地顏料調製魔法</h4>
+                        <p class="text-xs text-gray-600">泥土、木炭加水過濾，調製天然濃稠顏料。</p>
+                    </div>
+
+                    <div class="bg-white border-2 border-amber-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-black text-amber-800 bg-amber-100 px-2.5 py-1 rounded-full">第 3 週</span>
+                            <span class="text-xl">🖌️</span>
+                        </div>
+                        <h4 class="font-bold text-earth-900 mb-1">質地實驗與集體創作</h4>
+                        <p class="text-xs text-gray-600">使用松針刷與粗把手筆進行拓印、刮刻與拼貼。</p>
+                    </div>
+
+                    <div class="bg-white border-2 border-purple-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-black text-purple-800 bg-purple-100 px-2.5 py-1 rounded-full">第 4 週</span>
+                            <span class="text-xl">🖼️</span>
+                        </div>
+                        <h4 class="font-bold text-earth-900 mb-1">大地藝廊與回饋分享</h4>
+                        <p class="text-xs text-gray-600">作品展示、多感官欣賞與觸覺卡卡片分享。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 週次詳細教案互動卡片 Interactive Weekly Lesson Plan -->
+        <section id="weekly-plans" class="scroll-mt-24">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-earth-200 card-box">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-earth-100 text-earth-800 rounded-full text-xs font-bold mb-1">
+                            <i class="fa-solid fa-calendar-week"></i> 每週詳細教學流程
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-earth-900">40分鐘 單元教案卡片</h2>
+                    </div>
+                    
+                    <!-- 週次切換 Tab Buttons -->
+                    <div class="flex flex-wrap gap-2 bg-earth-50 p-1.5 rounded-2xl border border-earth-200">
+                        <button onclick="switchWeek(1)" id="tab-w1" class="px-4 py-2 rounded-xl font-bold text-sm transition btn-sen bg-forest-600 text-white shadow-sm">第 1 週</button>
+                        <button onclick="switchWeek(2)" id="tab-w2" class="px-4 py-2 rounded-xl font-bold text-sm transition btn-sen text-earth-700 hover:bg-earth-200">第 2 週</button>
+                        <button onclick="switchWeek(3)" id="tab-w3" class="px-4 py-2 rounded-xl font-bold text-sm transition btn-sen text-earth-700 hover:bg-earth-200">第 3 週</button>
+                        <button onclick="switchWeek(4)" id="tab-w4" class="px-4 py-2 rounded-xl font-bold text-sm transition btn-sen text-earth-700 hover:bg-earth-200">第 4 週</button>
+                    </div>
+                </div>
+
+                <!-- 週次內容展示區 Week Content Display -->
+                <div id="week-content-container">
+                    <!-- JavaScript 將在此動態渲染 selected week -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. IEP 特教適性口訣與輔具卡 IEP Interactive Flashcards & Aids -->
+        <section id="iep-aids" class="scroll-mt-24">
+            <div class="bg-earth-900 text-earth-50 rounded-3xl p-6 sm:p-8 shadow-xl border border-earth-800 card-box">
+                <div class="mb-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-earth-700 text-earth-200 rounded-full text-xs font-bold mb-2">
+                        <i class="fa-solid fa-hand-holding-heart"></i> 特教個別化輔具與口訣
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-white">IEP 動作口訣與輔具引導面板</h2>
+                    <p class="text-earth-300 text-sm mt-1">簡化動作認知負荷，提供結構化動作提示與物理輔具引導。</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- 左側：一抓二塗三壓印 口訣面板 -->
+                    <div class="bg-earth-800/80 rounded-2xl p-6 border border-earth-700 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-amber-300 flex items-center gap-2">
+                                    <i class="fa-solid fa-volume-high"></i> 三字朗朗口訣互動卡
+                                </h3>
+                                <span class="text-xs bg-amber-400/20 text-amber-300 px-2.5 py-1 rounded-full border border-amber-400/30">點擊步驟試聽語音</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 my-4">
+                                <!-- 步驟一 -->
+                                <button onclick="playMnemonic(1, '一抓！抓起自然素材')" class="bg-earth-700 hover:bg-earth-600 p-4 rounded-xl text-center border-2 border-amber-500/40 hover:border-amber-400 transition btn-sen group">
+                                    <div class="text-3xl mb-2 group-hover:scale-110 transition">🖐️</div>
+                                    <div class="font-black text-amber-300 text-lg">一抓</div>
+                                    <div class="text-xs text-earth-300 mt-1">抓取素材/松針</div>
+                                </button>
+                                <!-- 步驟二 -->
+                                <button onclick="playMnemonic(2, '二塗！均勻沾取塗抹')" class="bg-earth-700 hover:bg-earth-600 p-4 rounded-xl text-center border-2 border-emerald-500/40 hover:border-emerald-400 transition btn-sen group">
+                                    <div class="text-3xl mb-2 group-hover:scale-110 transition">🖌️</div>
+                                    <div class="font-black text-emerald-300 text-lg">二塗</div>
+                                    <div class="text-xs text-earth-300 mt-1">沾泥塗抹畫紙</div>
+                                </button>
+                                <!-- 步驟三 -->
+                                <button onclick="playMnemonic(3, '三壓印！蓋下美麗拓印')" class="bg-earth-700 hover:bg-earth-600 p-4 rounded-xl text-center border-2 border-sky-500/40 hover:border-sky-400 transition btn-sen group">
+                                    <div class="text-3xl mb-2 group-hover:scale-110 transition">👣</div>
+                                    <div class="font-black text-sky-300 text-lg">三壓印</div>
+                                    <div class="text-xs text-earth-300 mt-1">用力蓋印留痕</div>
+                                </button>
+                            </div>
+
+                            <div id="mnemonic-display" class="bg-earth-900/90 rounded-xl p-4 text-center border border-earth-700 min-h-[60px] flex items-center justify-center">
+                                <span class="text-earth-300 text-sm italic">點擊上方按鈕播放特教口訣語音引導...</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-earth-700/60 text-xs text-earth-400 flex justify-between items-center">
+                            <span>💡 提示：口訣重複吟唱可增強記憶與肌肉動作連結</span>
+                            <button onclick="playFullMnemonicSequence()" class="text-amber-300 hover:underline text-xs flex items-center gap-1 font-semibold">
+                                <i class="fa-solid fa-play-circle"></i> 連貫播放完整口訣
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 右側：輔具與肢體引導說明 -->
+                    <div class="bg-earth-800/80 rounded-2xl p-6 border border-earth-700 space-y-4">
+                        <h3 class="text-xl font-bold text-forest-300 flex items-center gap-2">
+                            <i class="fa-solid fa-tools"></i> 特教輔具與肢體引導說明 (Prompt Hierarchy)
+                        </h3>
+
+                        <div class="space-y-3">
+                            <div class="bg-earth-700/60 p-3.5 rounded-xl border-l-4 border-emerald-400 flex items-start gap-3">
+                                <div class="text-2xl">🌲</div>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">1. 綁紮松針刷 / 樹枝畫筆</h4>
+                                    <p class="text-xs text-earth-300 mt-0.5">提供天然粗糙觸覺反饋，握把加粗降低精細動作難度，適合抓握反射或抓握力弱學生。</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-earth-700/60 p-3.5 rounded-xl border-l-4 border-amber-400 flex items-start gap-3">
+                                <div class="text-2xl">🖍️</div>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">2. 粗把手 / 球型海綿水彩刷</h4>
+                                    <p class="text-xs text-earth-300 mt-0.5">大接觸面積握把，避免過度施力導致手部疲勞，增加操作成就感。</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-earth-700/60 p-3.5 rounded-xl border-l-4 border-sky-400 flex items-start gap-3">
+                                <div class="text-2xl">🤝</div>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">3. Hand-over-hand (手把手) 肢體協助</h4>
+                                    <p class="text-xs text-earth-300 mt-0.5">教師或同儕從手背輕握引導力道與方向，並逐漸褪除 (Fading) 至手肘協助。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. 教學實用輔助工具 Teacher's Interactive Toolkit -->
+        <section id="teacher-tools" class="scroll-mt-24">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- 4A. 40分鐘課堂分段計時器 Classroom Timer (5 cols) -->
+                <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-earth-200 card-box flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="p-2 bg-amber-100 text-amber-800 rounded-xl font-bold text-xs"><i class="fa-solid fa-stopwatch"></i> 特教結構化</span>
+                                <h3 class="text-xl font-black text-earth-900">40分鐘課堂計時器</h3>
+                            </div>
+                            <span id="current-phase-badge" class="text-xs px-2.5 py-1 bg-forest-100 text-forest-800 font-bold rounded-full">引起動機 (10min)</span>
+                        </div>
+
+                        <!-- 階段選擇按鈕 -->
+                        <div class="grid grid-cols-3 gap-1.5 mb-6 text-xs">
+                            <button onclick="setTimerPhase(1)" id="phase-btn-1" class="py-2 rounded-xl font-bold bg-forest-600 text-white transition">1. 引起動機<br>(10分)</button>
+                            <button onclick="setTimerPhase(2)" id="phase-btn-2" class="py-2 rounded-xl font-bold bg-earth-100 text-earth-700 hover:bg-earth-200 transition">2. 發展活動<br>(20分)</button>
+                            <button onclick="setTimerPhase(3)" id="phase-btn-3" class="py-2 rounded-xl font-bold bg-earth-100 text-earth-700 hover:bg-earth-200 transition">3. 綜合反思<br>(10分)</button>
+                        </div>
+
+                        <!-- 大數字計時器面板 -->
+                        <div class="bg-earth-50 rounded-2xl p-6 text-center border border-earth-200 my-4 relative overflow-hidden">
+                            <div id="timer-display" class="text-5xl sm:text-6xl font-black text-earth-900 font-mono tracking-tight">10:00</div>
+                            <div class="w-full bg-earth-200 h-2.5 rounded-full mt-4 overflow-hidden">
+                                <div id="timer-progress" class="bg-forest-500 h-full w-full transition-all duration-1000"></div>
+                            </div>
+                            <p id="timer-hint" class="text-xs text-earth-600 mt-3 font-medium">🍃 停下來先觀察：覺察風聲、草香與土地質感</p>
+                        </div>
+                    </div>
+
+                    <!-- 計時控制鈕 -->
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="toggleTimer()" id="timer-start-btn" class="flex-1 py-3 bg-forest-600 hover:bg-forest-700 text-white font-bold rounded-xl shadow transition btn-sen flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i> 開始計時
+                        </button>
+                        <button onclick="resetTimer()" class="px-4 py-3 bg-earth-200 hover:bg-earth-300 text-earth-800 font-bold rounded-xl transition btn-sen">
+                            <i class="fa-solid fa-rotate-left"></i> 重置
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4B. 多感官觀察評量點讚板 Sensory Assessment Checklist (7 cols) -->
+                <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-earth-200 card-box">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <span class="p-2 bg-forest-100 text-forest-800 rounded-xl font-bold text-xs"><i class="fa-solid fa-check-double"></i> 多感官評量</span>
+                            <h3 class="text-xl font-black text-earth-900 mt-1">五感覺察記錄與評量點讚板</h3>
+                        </div>
+                        <button onclick="resetChecklist()" class="text-xs text-earth-500 hover:text-earth-800 underline">清空記錄</button>
+                    </div>
+
+                    <p class="text-xs text-earth-600 mb-4">供教師觀察紀錄或學生互動自我檢核，點擊圖示完成覺察評量。</p>
+
+                    <div class="space-y-3">
+                        <!-- 眼睛看 -->
+                        <div class="flex items-center justify-between p-3 bg-earth-50 rounded-2xl border border-earth-200 hover:bg-earth-100/60 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl">👁️</div>
+                                <div>
+                                    <div class="font-bold text-sm text-earth-900">眼睛看 (視覺)</div>
+                                    <div class="text-xs text-earth-600">觀察落葉顏色 (黃/綠/棕) 與土地紋路</div>
+                                </div>
+                            </div>
+                            <button onclick="toggleSensoryCheck('see')" id="sense-see" class="w-10 h-10 rounded-full border-2 border-earth-300 flex items-center justify-center text-earth-300 hover:border-forest-500 transition btn-sen">
+                                <i class="fa-solid fa-check text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- 耳朵聽 -->
+                        <div class="flex items-center justify-between p-3 bg-earth-50 rounded-2xl border border-earth-200 hover:bg-earth-100/60 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center text-xl">👂</div>
+                                <div>
+                                    <div class="font-bold text-sm text-earth-900">耳朵聽 (聽覺)</div>
+                                    <div class="text-xs text-earth-600">聆聽校園風聲、樹葉沙沙聲與鳥鳴</div>
+                                </div>
+                            </div>
+                            <button onclick="toggleSensoryCheck('hear')" id="sense-hear" class="w-10 h-10 rounded-full border-2 border-earth-300 flex items-center justify-center text-earth-300 hover:border-forest-500 transition btn-sen">
+                                <i class="fa-solid fa-check text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- 鼻子聞 -->
+                        <div class="flex items-center justify-between p-3 bg-earth-50 rounded-2xl border border-earth-200 hover:bg-earth-100/60 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl">👃</div>
+                                <div>
+                                    <div class="font-bold text-sm text-earth-900">鼻子聞 (嗅覺)</div>
+                                    <div class="text-xs text-earth-600">嗅聞泥土濕氣與新鮮草木香氣</div>
+                                </div>
+                            </div>
+                            <button onclick="toggleSensoryCheck('smell')" id="sense-smell" class="w-10 h-10 rounded-full border-2 border-earth-300 flex items-center justify-center text-earth-300 hover:border-forest-500 transition btn-sen">
+                                <i class="fa-solid fa-check text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- 手摸摸 -->
+                        <div class="flex items-center justify-between p-3 bg-earth-50 rounded-2xl border border-earth-200 hover:bg-earth-100/60 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl">✋</div>
+                                <div>
+                                    <div class="font-bold text-sm text-earth-900">手摸摸 (觸覺)</div>
+                                    <div class="text-xs text-earth-600">觸摸泥土粗細、石頭光滑與樹皮紋理</div>
+                                </div>
+                            </div>
+                            <button onclick="toggleSensoryCheck('touch')" id="sense-touch" class="w-10 h-10 rounded-full border-2 border-earth-300 flex items-center justify-center text-earth-300 hover:border-forest-500 transition btn-sen">
+                                <i class="fa-solid fa-check text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4C. 大地色彩與素材調配擬真畫布 Virtual Natural Pigment Studio -->
+            <div class="mt-8 bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-earth-200 card-box">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-xs font-bold mb-1">
+                            <i class="fa-solid fa-flask"></i> 互動實驗室
+                        </div>
+                        <h2 class="text-2xl font-black text-earth-900">大地顏料調配與自由畫布</h2>
+                        <p class="text-xs text-earth-600 mt-1">選擇自然原料調製顏料，並使用鬆針刷或手壓印在畫布上創作！</p>
+                    </div>
+
+                    <!-- 調色盤控制鈕 -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-bold text-earth-700">選擇顏料：</span>
+                        <button onclick="setPigment('#845738', '泥土棕')" class="w-8 h-8 rounded-full bg-[#845738] border-2 border-white shadow ring-2 ring-earth-500 btn-sen" title="泥土棕"></button>
+                        <button onclick="setPigment('#374151', '木炭黑')" class="w-8 h-8 rounded-full bg-[#374151] border-2 border-white shadow hover:scale-105 btn-sen" title="木炭黑"></button>
+                        <button onclick="setPigment('#4b8d61', '樹葉綠')" class="w-8 h-8 rounded-full bg-[#4b8d61] border-2 border-white shadow hover:scale-105 btn-sen" title="樹葉綠"></button>
+                        <button onclick="setPigment('#d97706', '紅赭土')" class="w-8 h-8 rounded-full bg-[#d97706] border-2 border-white shadow hover:scale-105 btn-sen" title="紅赭土"></button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- 左側畫布區 (8 cols) -->
+                    <div class="lg:col-span-8 flex flex-col items-center">
+                        <div class="w-full h-80 sm:h-96 rounded-2xl canvas-bg border-4 border-earth-300 relative shadow-inner overflow-hidden cursor-crosshair">
+                            <canvas id="art-canvas" class="w-full h-full block"></canvas>
+                        </div>
+                        <div class="flex justify-between w-full mt-3 text-xs text-earth-600">
+                            <span id="current-tool-info">當前工具：泥土棕 / 松針粗筆觸</span>
+                            <div class="space-x-2">
+                                <button onclick="clearCanvas()" class="px-3 py-1.5 bg-earth-200 hover:bg-earth-300 text-earth-800 font-bold rounded-lg transition btn-sen">
+                                    <i class="fa-solid fa-eraser"></i> 清空畫布
+                                </button>
+                                <button onclick="stampLeaf()" class="px-3 py-1.5 bg-forest-600 hover:bg-forest-700 text-white font-bold rounded-lg transition btn-sen">
+                                    🍃 蓋印落葉拓印
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右側調配實驗說明 (4 cols) -->
+                    <div class="lg:col-span-4 bg-earth-50 rounded-2xl p-5 border border-earth-200 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-earth-900 mb-3 text-base flex items-center gap-2">
+                                <i class="fa-solid fa-mortar-pestle text-amber-700"></i> 第二週實作：調製秘訣
+                            </h4>
+                            <ol class="space-y-2.5 text-xs text-earth-700 list-decimal list-inside">
+                                <li class="leading-relaxed"><strong class="text-earth-900">過濾雜質：</strong> 使用篩網除去乾草與小石塊。</li>
+                                <li class="leading-relaxed"><strong class="text-earth-900">加入黏著媒介：</strong> 添加少量水與白膠/糯米漿增加黏著度。</li>
+                                <li class="leading-relaxed"><strong class="text-earth-900">濃稠度測試：</strong> 以木棒攪拌至如優格般濃稠即可塗抹。</li>
+                            </ol>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-amber-100/60 rounded-xl border border-amber-300 text-xs text-amber-900">
+                            <i class="fa-solid fa-face-smile text-amber-700"></i> <strong>適性小貼士：</strong> 對觸覺敏感生可提供拋棄式手套，或先以樹枝、松針筆代替手指直接接觸。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 Footer -->
+    <footer class="bg-earth-900 text-earth-400 py-8 mt-12 border-t border-earth-800 no-print">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs space-y-2">
+            <p class="font-semibold text-earth-200">與土地相遇：大地創作與自然顏料 國小特教/資源班連續四週微型課程</p>
+            <p>本互動系統遵循 IEP 適性教學原則，專為特教領域教師、導師與學生視覺化呈現而設計。</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript 腳本邏輯 -->
+    <script>
+        // --- 1. 四週詳細教案資料庫 Database ---
+        const weeklyData = {
+            1: {
+                title: "第一週：打開心靈，遇見土地 (感官覺察與素材採集)",
+                badge: "第 1 節 / 40分鐘",
+                objectives: [
+                    "能運用眼、耳、手、鼻感受校園自然環境（微風、草香、石頭質地）。",
+                    "能在引導下收集並指認至少 2~3 種自然素材（如落葉、樹枝、小石子）。"
+                ],
+                flow: [
+                    {
+                        time: "10 min",
+                        phase: "引起動機：停下來，先觀察",
+                        details: "帶領學生至校園草地上安靜坐下 1 分鐘，引導多感官覺察：「現在你在哪裡？聽見什麼？聞到什麼？」輔以覺察點讚板點選。"
+                    },
+                    {
+                        time: "20 min",
+                        phase: "發展活動：自然寶藏尋寶遊戲",
+                        details: "發放「大地採集籃」與素材圖卡，引導學生採集特定質感落葉（粗糙/光滑）、小樹枝與泥土樣品。教師以 Hand-over-hand 協助觸覺防禦學生。"
+                    },
+                    {
+                        time: "10 min",
+                        phase: "綜合活動：分享與分類素材",
+                        details: "回到教室，將採集的素材放在大桌面上進行摸摸看分類（硬的、軟的、香香的），給予正向增強。"
+                    }
+                ],
+                materials: "大地採集籃、摸摸袋、素材檢核圖卡、粗把手夾子。",
+                iepNote: "對觸覺敏感學生，提供透明夾鏈袋隔著觸摸落葉；對注意力不集中學生，給予單一採集任務卡。"
+            },
+            2: {
+                title: "第二週：大地顏料調製魔法 (顏料調製與質地實驗)",
+                badge: "第 2 節 / 40分鐘",
+                objectives: [
+                    "能嘗試將泥土、木炭加水過濾與搗碎，觀察物質態變與顏色差異。",
+                    "能使用工具將泥土顏料均勻塗抹在畫紙上。"
+                ],
+                flow: [
+                    {
+                        time: "10 min",
+                        phase: "引起動機：泥土與木炭變身術",
+                        details: "展示泥土、木炭塊與調好的自然顏料，體驗「乾泥土」與「濕顏料」的質感對比。"
+                    },
+                    {
+                        time: "20 min",
+                        phase: "發展活動：大地顏料實驗室",
+                        details: "使用搗藥缽搗碎木炭/篩過細泥土，加入適量水與白膠黏著劑。運用口訣「一抓、二塗」以木棒攪拌成濃稠顏料。"
+                    },
+                    {
+                        time: "10 min",
+                        phase: "綜合活動：筆觸試塗與清潔",
+                        details: "在試塗紙上畫出線條，學習收拾個人實驗洗滌具，培養生活自理。"
+                    }
+                ],
+                materials: "細篩網、小搗缽、泥土、木炭粉、水、白膠、試塗紙。",
+                iepNote: "簡化搗碎步驟，提供預先篩好的泥土備用；口訣引導「轉轉轉、變顏料」。"
+            },
+            3: {
+                title: "第三週：質地實驗與集體創作 (拓印、刮刻與拼貼)",
+                badge: "第 3 節 / 40分鐘",
+                objectives: [
+                    "能運用綁紮松針刷或粗把手水彩刷進行泥土顏料拓印。",
+                    "能在團體集體畫布上完成至少一個自然印記。"
+                ],
+                flow: [
+                    {
+                        time: "10 min",
+                        phase: "引起動機：探索拓印紋理",
+                        details: "示範以落葉背面沾泥土顏料蓋印，以及用松針刷刷出風的痕跡。"
+                    },
+                    {
+                        time: "20 min",
+                        phase: "發展活動：大地大畫布集體創作",
+                        details: "全班合力在大卡紙上創作！運用「一抓、二塗、三壓印」口訣，進行葉脈拓印、樹枝刮刻與泥土潑灑創作。"
+                    },
+                    {
+                        time: "10 min",
+                        phase: "綜合活動：作品觀察與命名",
+                        details: "圍繞集體大畫布，指認「哪一個是你蓋的？」，給予讚賞。"
+                    }
+                ],
+                materials: "綁紮松針刷、粗把手海綿刷、大張牛皮紙、落葉、木棒刮刀。",
+                iepNote: "使用鬆針刷降低手部精細動作負荷；必要時提供 Hand-over-hand 肢體輔助完成壓印。"
+            },
+            4: {
+                title: "第四週：大地藝廊展示與感官反思 (展示與分享)",
+                badge: "第 4 節 / 40分鐘",
+                objectives: [
+                    "能指認自己與同儕的作品，並表達喜愛的自然顏料質感。",
+                    "能運用多感官描述完成課程回饋與作品觸覺卡製作。"
+                ],
+                flow: [
+                    {
+                        time: "10 min",
+                        phase: "引起動機：打造教室大地藝廊",
+                        details: "將學生作品與泥土顏料卡懸掛佈置，播放自然輕音樂，創造情境氛圍。"
+                    },
+                    {
+                        time: "20 min",
+                        phase: "發展活動：小藝評家漫步與觸覺卡",
+                        details: "帶領學生進行導覽漫步，摸摸乾燥泥土的質感。製作「大地感謝觸覺卡」，黏貼採集的落葉與泥土繪畫。"
+                    },
+                    {
+                        time: "10 min",
+                        phase: "綜合活動：頒發大地小藝術家獎章",
+                        details: "分享學習心得，頒發特教學習證書與彩繪小石頭作為正向回饋。"
+                    }
+                ],
+                materials: "展示展架、麻繩木夾、觸覺卡卡片、彩繪獎章石頭。",
+                iepNote: "允許非語言表達學生透過點選圖卡或點頭表達喜好；給予高密度的正向增強。"
+            }
+        };
+
+        // --- 渲染週次教案卡片 Render Weekly Card ---
+        function switchWeek(weekNum) {
+            // 更新 Tab 按鈕樣式
+            [1, 2, 3, 4].forEach(w => {
+                const btn = document.getElementById(`tab-w${w}`);
+                if (w === weekNum) {
+                    btn.className = "px-4 py-2 rounded-xl font-bold text-sm transition btn-sen bg-forest-600 text-white shadow-sm";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl font-bold text-sm transition btn-sen text-earth-700 hover:bg-earth-200";
+                }
+            });
+
+            const data = weeklyData[weekNum];
+            const container = document.getElementById('week-content-container');
+
+            let flowHtml = '';
+            data.flow.forEach(item => {
+                flowHtml += `
+                    <div class="flex gap-4 items-start bg-earth-50/70 p-4 rounded-2xl border border-earth-200">
+                        <span class="bg-forest-600 text-white font-bold text-xs px-2.5 py-1 rounded-lg shrink-0 mt-0.5">${item.time}</span>
+                        <div>
+                            <h5 class="font-bold text-earth-900 text-sm mb-1">${item.phase}</h5>
+                            <p class="text-xs text-earth-700 leading-relaxed">${item.details}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            let objectivesHtml = '';
+            data.objectives.forEach(obj => {
+                objectivesHtml += `<li class="flex items-start gap-2"><span class="text-forest-600 font-bold">✔</span> <span>${obj}</span></li>`;
+            });
+
+            container.innerHTML = `
+                <div class="space-y-6 animate-fadeIn">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-earth-100/60 p-4 rounded-2xl border border-earth-200">
+                        <h3 class="text-xl font-black text-earth-900">${data.title}</h3>
+                        <span class="px-3 py-1 bg-forest-700 text-white font-bold text-xs rounded-full w-max">${data.badge}</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- 左邊 2 欄：教學流程 -->
+                        <div class="lg:col-span-2 space-y-3">
+                            <h4 class="font-bold text-earth-900 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-forest-600"></i> 教學流程拆解
+                            </h4>
+                            ${flowHtml}
+                        </div>
+
+                        <!-- 右邊 1 欄：目標與適性策略 -->
+                        <div class="space-y-4">
+                            <!-- 教學目標 -->
+                            <div class="bg-forest-50 p-4 rounded-2xl border border-forest-200">
+                                <h4 class="font-bold text-forest-900 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-bullseye"></i> 單元教學目標
+                                </h4>
+                                <ul class="text-xs text-forest-800 space-y-2">
+                                    ${objectivesHtml}
+                                </ul>
+                            </div>
+
+                            <!-- 教具與 IEP 貼士 -->
+                            <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 space-y-3 text-xs">
+                                <div>
+                                    <h4 class="font-bold text-amber-900 mb-1"><i class="fa-solid fa-box-open"></i> 準備教具素材：</h4>
+                                    <p class="text-amber-800">${data.materials}</p>
+                                </div>
+                                <div class="pt-2 border-t border-amber-200">
+                                    <h4 class="font-bold text-amber-900 mb-1"><i class="fa-solid fa-heart"></i> IEP 個別化適性策略：</h4>
+                                    <p class="text-amber-800 leading-relaxed">${data.iepNote}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 2. IEP 口訣語音與動畫引導 ---
+        function playMnemonic(step, text) {
+            const display = document.getElementById('mnemonic-display');
+            display.innerHTML = `<span class="text-amber-400 font-bold text-lg animate-pulse">📢 ${text}</span>`;
+            
+            // 使用 Web Speech API 進行語音朗讀
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // 停止先前的發音
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-TW';
+                utterance.rate = 0.9; // 特教友善較慢語速
+                utterance.pitch = 1.1;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function playFullMnemonicSequence() {
+            const steps = [
+                "一抓！抓起自然素材與筆桿",
+                "二塗！均勻沾取泥土顏料塗抹",
+                "三壓印！用力蓋下美麗落葉拓印"
+            ];
+            let delay = 0;
+            steps.forEach((txt, idx) => {
+                setTimeout(() => {
+                    playMnemonic(idx + 1, txt);
+                }, delay);
+                delay += 2800;
+            });
+        }
+
+        // --- 3. 40分鐘課堂計時器 Timer Logic ---
+        let timerInterval = null;
+        let totalSeconds = 600; // 預設 10 min
+        let currentMaxSeconds = 600;
+        let isRunning = false;
+        let currentPhase = 1;
+
+        const phaseConfigs = {
+            1: { duration: 600, badge: "引起動機 (10min)", hint: "🍃 停下來先觀察：覺察風聲、草香與土地質感" },
+            2: { duration: 1200, badge: "發展活動 (20min)", hint: "🎨 顏料調製與創作：一抓、二塗、三壓印" },
+            3: { duration: 600, badge: "綜合活動 (10min)", hint: "🖼️ 作品展示與反思：作品指認與大地感謝卡" }
+        };
+
+        function setTimerPhase(phase) {
+            currentPhase = phase;
+            clearInterval(timerInterval);
+            isRunning = false;
+            document.getElementById('timer-start-btn').innerHTML = `<i class="fa-solid fa-play"></i> 開始計時`;
+
+            [1, 2, 3].forEach(p => {
+                const btn = document.getElementById(`phase-btn-${p}`);
+                if (p === phase) {
+                    btn.className = "py-2 rounded-xl font-bold bg-forest-600 text-white transition";
+                } else {
+                    btn.className = "py-2 rounded-xl font-bold bg-earth-100 text-earth-700 hover:bg-earth-200 transition";
+                }
+            });
+
+            const config = phaseConfigs[phase];
+            totalSeconds = config.duration;
+            currentMaxSeconds = config.duration;
+            document.getElementById('current-phase-badge').innerText = config.badge;
+            document.getElementById('timer-hint').innerText = config.hint;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = totalSeconds % 60;
+            document.getElementById('timer-display').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            const pct = (totalSeconds / currentMaxSeconds) * 100;
+            document.getElementById('timer-progress').style.width = `${pct}%`;
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('timer-start-btn');
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> 繼續計時`;
+            } else {
+                isRunning = true;
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i> 暫停`;
+                timerInterval = setInterval(() => {
+                    if (totalSeconds > 0) {
+                        totalSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        isRunning = false;
+                        btn.innerHTML = `<i class="fa-solid fa-rotate-left"></i> 完成該階段`;
+                        confetti({ particleCount: 80, spread: 60 });
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            document.getElementById('timer-start-btn').innerHTML = `<i class="fa-solid fa-play"></i> 開始計時`;
+            totalSeconds = currentMaxSeconds;
+            updateTimerDisplay();
+        }
+
+        // --- 4. 多感官觀察評量點讚板 Sensory Assessment ---
+        const sensoryState = { see: false, hear: false, smell: false, touch: false };
+
+        function toggleSensoryCheck(senseKey) {
+            sensoryState[senseKey] = !sensoryState[senseKey];
+            const btn = document.getElementById(`sense-${senseKey}`);
+            
+            if (sensoryState[senseKey]) {
+                btn.className = "w-10 h-10 rounded-full bg-forest-600 text-white border-2 border-forest-600 flex items-center justify-center transition btn-sen shadow";
+                // 撒花慶祝
+                confetti({ particleCount: 30, origin: { y: 0.7 } });
+            } else {
+                btn.className = "w-10 h-10 rounded-full border-2 border-earth-300 flex items-center justify-center text-earth-300 hover:border-forest-500 transition btn-sen";
+            }
+        }
+
+        function resetChecklist() {
+            ['see', 'hear', 'smell', 'touch'].forEach(k => {
+                sensoryState[k] = false;
+                const btn = document.getElementById(`sense-${k}`);
+                btn.className = "w-10 h-10 rounded-full border-2 border-earth-300 flex items-center justify-center text-earth-300 hover:border-forest-500 transition btn-sen";
+            });
+        }
+
+        // --- 5. 大地顏料畫布實作 Virtual Canvas ---
+        let canvas, ctx;
+        let isDrawing = false;
+        let currentPigment = '#845738';
+        let pigmentName = '泥土棕';
+
+        function initCanvas() {
+            canvas = document.getElementById('art-canvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+            
+            // 調整 Canvas 解析度
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 14; // 特教粗筆觸
+
+            // 事件監聽
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+
+            // 觸控支援 (Touch Events)
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            });
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            });
+
+            canvas.addEventListener('touchend', (e) => {
+                const mouseEvent = new MouseEvent('mouseup', {});
+                canvas.dispatchEvent(mouseEvent);
+            });
+        }
+
+        function setPigment(color, name) {
+            currentPigment = color;
+            pigmentName = name;
+            document.getElementById('current-tool-info').innerText = `當前工具：${name} / 粗松針筆觸`;
+        }
+
+        function getCanvasPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getCanvasPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getCanvasPos(e);
+            ctx.strokeStyle = currentPigment;
+            ctx.globalAlpha = 0.85; // 泥土自然透明度
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function clearCanvas() {
+            if (ctx && canvas) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function stampLeaf() {
+            if (!ctx || !canvas) return;
+            const x = Math.random() * (canvas.width - 60) + 30;
+            const y = Math.random() * (canvas.height - 60) + 30;
+            
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(Math.random() * Math.PI * 2);
+            ctx.fillStyle = currentPigment;
+            ctx.font = '40px serif';
+            ctx.fillText('🍃', -20, 15);
+            ctx.restore();
+        }
+
+        // --- 6. 頁面平滑滾動 ---
+        function scrollToSection(id) {
+            const elem = document.getElementById(id);
+            if (elem) {
+                elem.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // --- 初始化頁面 ---
+        window.onload = function() {
+            switchWeek(1);
+            initCanvas();
+
+            // 視窗調整時自動修正 Canvas 大小
+            window.addEventListener('resize', () => {
+                if (canvas && ctx) {
+                    const rect = canvas.getBoundingClientRect();
+                    canvas.width = rect.width;
+                    canvas.height = rect.height;
+                }
+            });
+        };
+    </script>
+</body>
+</html>
